@@ -3,26 +3,27 @@ package fr.lernejo.guessgame;
 import fr.lernejo.logger.Logger;
 import fr.lernejo.logger.LoggerFactory;
 
+import java.util.Date;
+
 public class Simulation {
 
     private final Logger logger = LoggerFactory.getLogger("simulation");
-    private Player player;  //TODO add variable type
-    private long numberToGuess; //TODO add variable type
+    private Player player;
+    private long numberToGuess;
+
+
 
     public Simulation(Player player) {// constructeur
         this.player = player;
     }
 
     public void initialize(long numberToGuess) {
-
-        // TODO pourquoi on initialise pas le nombre a deviner ici ?
      this.numberToGuess = numberToGuess;
     }
 
     private boolean nextRound() {
         long insertedNumberByPlayer = player.askNextGuess(); // demander au joueur d'inserer un nombre
         if (this.numberToGuess == insertedNumberByPlayer) {
-            System.out.println("*****   *o* bravo *o*    *****");
             logger.log("le joueur a trouvé le bon nombre !");
             return true;
         } else {
@@ -32,11 +33,29 @@ public class Simulation {
 
     }
 
-    public void loopUntilPlayerSucceed() {
-        boolean succeed = nextRound();
+    public void loopUntilPlayerSucceed(long maxIteration) {
 
-        while (succeed == false) {
-           succeed = nextRound();
+
+        boolean succeed = nextRound();
+        long debutPartie = System.currentTimeMillis();
+        long i = 0;
+
+        while (succeed == false && i < maxIteration) {
+            i++;
+            succeed = nextRound();
+        }
+
+        long finPartie = System.currentTimeMillis();
+        long tempsDePartie = finPartie - debutPartie;
+        Date date = new Date(finPartie);
+
+
+        if (succeed == true){
+            System.out.println("*****   *o* bravo *o*    *****     en: "+ i +" operations \n Cette partie a prit : " + tempsDePartie +"ms" + "\n le " + date);
+        } else if (i >= maxIteration) {
+            logger.log("** PERDU ** vous avez dépassé le nombre d'iterations maximum !");
+        } else {
+            logger.log("ERROR DANS LE CODE DU JEU !!!");
         }
     }
 }
